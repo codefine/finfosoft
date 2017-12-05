@@ -3,9 +3,6 @@ var Finfosoft = {
 
 	Ring: function (opts) {
 		this.buildBasicEnvironment(opts.el);
-		// this.canvas = this.parent.querySelector('canvas');
-		// this.gc = this.canvas.getContext('2d');
-		// this.input = this.parent.querySelector('input');
 		this.width = this.height = this.parent.clientWidth;
 		this.startDeg = opts.startDeg;
 		this.endDeg = opts.endDeg;
@@ -18,11 +15,10 @@ var Finfosoft = {
 	},
 
 	OnOff: function (opts) {
-		this.parent = document.querySelector(opts.el);
-		this.leftBtn = this.parent.querySelector('.left');
-		this.rightBtn = this.parent.querySelector('.right');
-		this.slideBar = this.parent.querySelector('.slideBar');
-		this.slider = this.parent.querySelector('.slider');
+		this.buildBasicEnvironment(opts.el);
+		this.timer = null;
+		this.leftBtn.innerHTML = opts.ui[0];
+		this.rightBtn.innerHTML = opts.ui[1];
 		this.width = this.parent.clientWidth;
 		this.height = this.parent.clientHeight;
 		this.status = opts.status;
@@ -251,33 +247,61 @@ Finfosoft.OnOff.prototype = {
 		this.judgeStatus(this.status);
 	},
 
+	//创建基本dom环境
+	buildBasicEnvironment(parentDom) {
+
+		// this.buildBasicEnvironment(parentDom);
+		var parent = document.querySelector(parentDom);
+		parent.classList.add('finfosoft-onOff');
+		this.parent = parent;
+
+		var leftBtn = document.createElement('span');
+		leftBtn.classList.add('left');
+		this.leftBtn = leftBtn;
+		this.parent.appendChild(this.leftBtn);
+
+		var rightBtn = document.createElement('span');
+		rightBtn.classList.add('right');
+		this.rightBtn = rightBtn;
+		this.parent.appendChild(this.rightBtn);
+
+		var slideBar = document.createElement('p');
+		slideBar.classList.add('slideBar');
+		this.slideBar = slideBar;
+		this.parent.appendChild(this.slideBar);
+
+		var slider = document.createElement('strong');
+		slider.classList.add('slider');
+		this.slider = slider;
+		this.parent.appendChild(this.slider);
+	},
+
 	//初始化组件大小
 	setStyle() {
 		this.leftBtn.style.lineHeight = this.rightBtn.style.lineHeight = this.height + 'px';
-		this.slideBar.style.width = this.width / 4 + 'px';
-		this.slideBar.style.height = this.height / 3 + 'px';
-		this.slideBar.style.left = (this.width - this.width / 4) / 2 + 'px';
-		this.slideBar.style.top = this.height / 3 + 'px';
-		this.slideBar.style.borderRadius = this.height / 3 / 2 + 'px';
-		this.slider.style.width = this.slider.style.height = this.height + 'px';
-		this.slider.style.left = (this.width - this.width / 4) / 2 + (this.width / 4) / 2 + 'px';
-		this.slider.style.top = 0;
-		this.slider.startPos = (this.width - this.width / 4) / 2 - this.height / 2;
-		this.slider.endPos = (this.width - this.width / 4) / 2 - this.height / 2 + this.width / 4;
+		this.slideBar.style.width = this.width - this.leftBtn.clientWidth - this.rightBtn.clientWidth + 'px';
+		this.slideBar.style.height = this.height / 5 + 'px';
+		this.slideBar.style.left = (this.leftBtn.clientWidth + this.rightBtn.clientWidth) / 2 + 'px';
+		this.slideBar.style.top = (this.height - this.slideBar.clientHeight) / 2 + 'px';
+		this.slideBar.style.borderRadius = this.slideBar.clientHeight / 2 + 'px';
+		this.slider.style.width = this.slider.style.height = this.slideBar.clientHeight * 3 + 'px';
+		this.slider.style.top = (this.height - this.slideBar.clientHeight) / 2 - (this.slider.clientHeight - this.slideBar.clientHeight) / 2 + 'px';
+		this.slider.startPos = (this.width - this.slideBar.clientWidth) / 2 - this.slider.clientWidth / 2;
+		this.slider.endPos = this.width - (this.width - this.slideBar.clientWidth) / 2 - this.slider.clientWidth / 2;
 	},
 
 	//状态判断
 	judgeStatus() {
 		switch (this.status) {
 			case 1:
-				this.slider.style.left = this.slider.startPos + 'px';
-				this.leftBtn.style.color = '#1ab394';
-				this.rightBtn.style.color = '#aeaeae';
-				break;
-			case 0:
 				this.slider.style.left = this.slider.endPos + 'px';
 				this.leftBtn.style.color = '#aeaeae';
 				this.rightBtn.style.color = '#1ab394';
+				break;
+			case 0:
+				this.slider.style.left = this.slider.startPos + 'px';
+				this.leftBtn.style.color = '#1ab394';
+				this.rightBtn.style.color = '#aeaeae';
 				break;
 		}
 	},
@@ -285,17 +309,19 @@ Finfosoft.OnOff.prototype = {
 	//拖拽
 	dragSlider() {
 		this.parent.onmousedown = ev => {
+			clearTimeout(this.timer);
 			var ev = ev || window.event;
-			var startX = ev.clientX - this.getPosToDoc(this.parent).left;
+			var startX = ev.clientX - this.getPosToDoc(this.parent).left + this.getScrollDis().x;
+			console.log(startX)
 			var disX = ev.clientX;
 			var isMoved = false;
 			document.onmousemove = ev => {
 				var ev = ev || window.event;
 				var curX = ev.clientX - disX + startX;
 				if (curX > this.width / 2) {
-					this.status = 0;
-				} else {
 					this.status = 1;
+				} else {
+					this.status = 0;
 				}
 				this.judgeStatus();
 				isMoved = true;
@@ -305,14 +331,17 @@ Finfosoft.OnOff.prototype = {
 				document.onmousemove = document.onmouseup = null;
 				if (!isMoved) {
 					if (startX > this.width / 2) {
-						this.status = 0;
-					} else {
 						this.status = 1;
+					} else {
+						this.status = 0;
 					}
 					this.judgeStatus();
 				}
 				if (this.oldStatus != this.status) {
-					this.onChanged && this.onChanged(this.status);
+					this.timer = setTimeout(()=>{
+						this.onChanged && this.onChanged(this.status);
+						this.oldStatus = this.status;
+					}, 500);
 				}
 			};
 		};
@@ -336,6 +365,21 @@ Finfosoft.OnOff.prototype = {
 			obj = obj.offsetParent;
 		}
 		return dis;
+	},
+
+	getScrollDis() {
+		var x, y;
+		if (self.pageYOffset) {
+			y = self.pageYOffset;
+			x = self.pageXOffset;
+		} else if (document.documentElement && document.documentElement.scrollTop) { // Explorer 6 Strict
+			y = document.documentElement.scrollTop;
+			x = document.documentElement.scrollLeft;
+		} else if (document.body) {// all other Explorers
+			y = document.body.scrollTop;
+			x = document.body.scrollLeft;
+		}
+		return {x, y};
 	}
 
 };
