@@ -1,30 +1,6 @@
 //Finfosoft前端框架 js库 
 var Finfosoft = {
 	
-	/*
-	@ 插件名： 环形滚动条插件
-	@ 插件作者：dongmo / Michael.Lu
-	@ 插件版本：1.0
-	@ 插件兼容性：IE9.0及以上浏览器
-	@ API
-	 * el: 元素选择器
-	 * startDeg：起始角度(0度->x轴正向)
-	 * endDeg：结束角度(0度->x轴正向)
-	 ** lineWidth：滚动条宽度
-	 ** bgColor: 滚动条背景色
-	 ** mainColor： 主情景色
-	 ** initVal：input接口
-	@ 插件实例：
-		new Finfosoft.Ring({
-			el: '.finfosoft-ring',
-			startDeg: 150,
-			endDeg: 30,
-			lineWidth: 18,
-			bgColor: '#eeeeee',
-			mainColor: '#66ee66',
-			initVal: 20
-		});
-	*/
 	Ring: function(opts) {
 		this.parent = document.querySelector(opts.el);
 		this.canvas = this.parent.querySelector('canvas');
