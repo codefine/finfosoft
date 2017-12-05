@@ -312,7 +312,6 @@ Finfosoft.OnOff.prototype = {
 			clearTimeout(this.timer);
 			var ev = ev || window.event;
 			var startX = ev.clientX - this.getPosToDoc(this.parent).left + this.getScrollDis().x;
-			console.log(startX)
 			var disX = ev.clientX;
 			var isMoved = false;
 			document.onmousemove = ev => {
