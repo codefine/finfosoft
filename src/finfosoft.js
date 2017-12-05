@@ -17,11 +17,13 @@ var Finfosoft = {
 	OnOff: function (opts) {
 		this.buildBasicEnvironment(opts.el);
 		this.timer = null;
-		this.leftBtn.innerHTML = opts.ui[0];
-		this.rightBtn.innerHTML = opts.ui[1];
+		this.leftBtn.innerHTML = opts.ui ? opts.ui[0] : "LEFT";
+		this.rightBtn.innerHTML = opts.ui ? opts.ui[1] : "RIGHT";
+		this.mainColor = opts.mainColor ? opts.mainColor : "#1ab394";
+		this.sliderColor = opts.sliderColor ? opts.sliderColor : this.mainColor;
 		this.width = this.parent.clientWidth;
 		this.height = this.parent.clientHeight;
-		this.status = opts.status;
+		this.status = typeof opts.status === "undefined" ? 0 : opts.status;
 		this.oldStatus = opts.status;
 		this.onChanged = opts.onChanged;
 		this.init();
@@ -279,13 +281,18 @@ Finfosoft.OnOff.prototype = {
 	//初始化组件大小
 	setStyle() {
 		this.leftBtn.style.lineHeight = this.rightBtn.style.lineHeight = this.height + 'px';
+		
 		this.slideBar.style.width = this.width - this.leftBtn.clientWidth - this.rightBtn.clientWidth + 'px';
 		this.slideBar.style.height = this.height / 5 + 'px';
 		this.slideBar.style.left = (this.leftBtn.clientWidth + this.rightBtn.clientWidth) / 2 + 'px';
 		this.slideBar.style.top = (this.height - this.slideBar.clientHeight) / 2 + 'px';
 		this.slideBar.style.borderRadius = this.slideBar.clientHeight / 2 + 'px';
+		this.slideBar.style.backgroundColor = this.mainColor;
+
 		this.slider.style.width = this.slider.style.height = this.slideBar.clientHeight * 3 + 'px';
 		this.slider.style.top = (this.height - this.slideBar.clientHeight) / 2 - (this.slider.clientHeight - this.slideBar.clientHeight) / 2 + 'px';
+		this.slider.style.backgroundColor = this.sliderColor;
+		
 		this.slider.startPos = (this.width - this.slideBar.clientWidth) / 2 - this.slider.clientWidth / 2;
 		this.slider.endPos = this.width - (this.width - this.slideBar.clientWidth) / 2 - this.slider.clientWidth / 2;
 	},
@@ -296,11 +303,11 @@ Finfosoft.OnOff.prototype = {
 			case 1:
 				this.slider.style.left = this.slider.endPos + 'px';
 				this.leftBtn.style.color = '#aeaeae';
-				this.rightBtn.style.color = '#1ab394';
+				this.rightBtn.style.color = this.mainColor;
 				break;
 			case 0:
 				this.slider.style.left = this.slider.startPos + 'px';
-				this.leftBtn.style.color = '#1ab394';
+				this.leftBtn.style.color = this.mainColor;
 				this.rightBtn.style.color = '#aeaeae';
 				break;
 		}

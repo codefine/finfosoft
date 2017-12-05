@@ -60,7 +60,7 @@
 </head>
 <body>
     
-    <a href="https://github.com/codefine/finfosoft/blob/master/examples/Ring.html" class="link">View Source</a>
+    <a href="https://github.com/codefine/finfosoft/blob/master/examples/OnOff.html" class="link">View Source</a>
 
     <div class="app"></div>
 
@@ -76,6 +76,8 @@
         new Finfosoft.OnOff({
             el: '.app',
             ui: ['LEFT', 'RIGHT'],
+            mainColor: '#1ab394',
+            sliderColor: '#ff4400',
             status: 1,
             onChanged: function(status) {
                 updateUI( document.querySelector('.status>span'), status );
