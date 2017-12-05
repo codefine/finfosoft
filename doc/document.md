@@ -1,7 +1,5 @@
 # Document
 
-<p style="width: 100%; height: 20px; background: black; color: #fff;">test</p>
-
 ## class Finfosoft.Ring
 
 **NAME**
