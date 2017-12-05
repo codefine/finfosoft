@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link rel="stylesheet" type="text/css" href="../src/finfosoft.css"/>
+    <style>
+        html,
+        body{
+            margin: 0;
+            padding: 0;
+        }
+        .app{
+            width: 400px;
+            height: 400px;
+            position: absolute;
+            left: 100%;
+            top: 100%;
+            box-shadow: 0 0 6px rgba(0, 0, 0, .4);
+        }
+    </style>
+</head>
+<body>
+    <div class="app"></div>
+    <script type="text/javascript" charset="utf-8" src="../src/finfosoft.js"></script>
+    <script>
+        new Finfosoft.Ring({
+            el: '.app',
+            startDeg: 150,
+            endDeg: 30,
+            lineWidth: 18,
+            bgColor: '#eeeeee',
+            mainColor: '#66ee66',
+            initVal: 20
+        });
+    </script>
+</body>
+</html>
