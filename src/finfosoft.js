@@ -1,5 +1,7 @@
 //Finfosoft前端框架 js库 
-var Finfosoft = {
+const Finfosoft = {
+
+	// _: function() {},
 
 	Ring: function (opts) {
 		this.buildBasicEnvironment(opts.el);
@@ -37,7 +39,7 @@ Finfosoft.prototype = {
 	//构造函数指针修正
 	constructor: this
 
-}
+};
 
 //Ring插件方法
 Finfosoft.Ring.prototype = {
@@ -50,7 +52,7 @@ Finfosoft.Ring.prototype = {
 		this.canvas.width = this.width;
 		this.canvas.height = this.height;
 		this.parent.onmousedown = ev => {
-			var ev = ev || window.event;
+			ev = ev || window.event;
 			this.mousedown(ev);
 		};
 		this.drawLine(this.endDeg + 360, this.bgColor);
@@ -60,7 +62,7 @@ Finfosoft.Ring.prototype = {
 			this.blur();
 		};
 		this.input.onkeyup = ev => {
-			var ev = ev || window.event;
+			ev = ev || window.event;
 			this.keyup(ev);
 		}
 		this.initValue(this.initVal);
@@ -69,16 +71,16 @@ Finfosoft.Ring.prototype = {
 
 	//创建基本dom环境
 	buildBasicEnvironment(parentDom) {
-		var parent = document.querySelector(parentDom);
+		const parent = document.querySelector(parentDom);
 		parent.classList.add("finfosoft-ring");
 		this.parent = parent;
 
-		var canvas = document.createElement('canvas');
-		var gc = canvas.getContext('2d');
+		const canvas = document.createElement('canvas');
+		const gc = canvas.getContext('2d');
 		[this.canvas, this.gc] = [canvas, gc];
 		this.parent.appendChild(this.canvas);
 
-		var input = document.createElement('input');
+		const input = document.createElement('input');
 		input.setAttribute("type", "text");
 		this.input = input;
 		this.parent.appendChild(this.input);
@@ -117,26 +119,13 @@ Finfosoft.Ring.prototype = {
 		this.drawLine(iDeg, this.mainColor);
 	},
 
-	//获取到document的距离
-	getPosToDoc(obj) {
-		var dis = {
-			left: 0,
-			top: 0
-		};
-		while (obj) {
-			dis.left += obj.offsetLeft;
-			dis.top += obj.offsetTop;
-			obj = obj.offsetParent;
-		}
-		return dis;
-	},
-
 	//鼠标交互逻辑
 	mouseCtrl(x, y) {
+		let [iDeg, iScale] = [0, 0];
 		if (y <= this.height / 2) {
-			var iDeg = 270 + Math.atan((x - this.width / 2) / (this.height / 2 - y)) * 180 / Math.PI;
+			iDeg = 270 + Math.atan((x - this.width / 2) / (this.height / 2 - y)) * 180 / Math.PI;
 		} else {
-			var iDeg = 90 + Math.atan((x - this.width / 2) / (this.height / 2 - y)) * 180 / Math.PI;
+			iDeg = 90 + Math.atan((x - this.width / 2) / (this.height / 2 - y)) * 180 / Math.PI;
 		}
 		if (iDeg > this.endDeg && iDeg < this.startDeg) {
 			if (x <= this.width / 2) {
@@ -146,9 +135,9 @@ Finfosoft.Ring.prototype = {
 			}
 		}
 		if (iDeg >= this.startDeg) {
-			var iScale = (iDeg - this.startDeg) / (this.endDeg + 360 - this.startDeg);
+			iScale = (iDeg - this.startDeg) / (this.endDeg + 360 - this.startDeg);
 		} else if (iDeg <= this.endDeg) {
-			var iScale = (360 + iDeg - this.startDeg) / (this.endDeg + 360 - this.startDeg);
+			iScale = (360 + iDeg - this.startDeg) / (this.endDeg + 360 - this.startDeg);
 		}
 		this.reDraw(iDeg);
 		this.rangeText(iScale);
@@ -156,11 +145,11 @@ Finfosoft.Ring.prototype = {
 
 	//鼠标按下时进度条响应
 	mousedown(ev) {
-		var x = ev.clientX - this.getPosToDoc(this.canvas).left + this.getScrollDis().x;
-		var y = ev.clientY - this.getPosToDoc(this.canvas).top + this.getScrollDis().y;
+		const x = ev.clientX - _.getPosToDoc(this.canvas).left + _.getScrollDis().x;
+		const y = ev.clientY - _.getPosToDoc(this.canvas).top + _.getScrollDis().y;
 		this.mouseCtrl(x, y);
 		document.onmousemove = ev => {
-			var ev = ev || window.event;
+			ev = ev || window.event;
 			this.mousemove(ev);
 		};
 		document.onmouseup = () => {
@@ -170,8 +159,8 @@ Finfosoft.Ring.prototype = {
 
 	//鼠标移动时进度条响应
 	mousemove(ev) {
-		var x = ev.clientX - this.getPosToDoc(this.canvas).left + this.getScrollDis().x;
-		var y = ev.clientY - this.getPosToDoc(this.canvas).top + this.getScrollDis().y;
+		const x = ev.clientX - _.getPosToDoc(this.canvas).left + _.getScrollDis().x;
+		const y = ev.clientY - _.getPosToDoc(this.canvas).top + _.getScrollDis().y;
 		this.mouseCtrl(x, y);
 	},
 
@@ -192,7 +181,7 @@ Finfosoft.Ring.prototype = {
 			this.input.value = this.input.origVal;
 			return;
 		}
-		var iDeg = this.startDeg + this.input.value * (this.endDeg + 360 - this.startDeg) / 100;
+		const iDeg = this.startDeg + this.input.value * (this.endDeg + 360 - this.startDeg) / 100;
 		this.reDraw(iDeg);
 	},
 
@@ -213,25 +202,10 @@ Finfosoft.Ring.prototype = {
 	},
 
 	reset() {
-		var iDeg = this.startDeg + this.initVal * (this.endDeg + 360 - this.startDeg) / 100;
-		var iScale = (iDeg - this.startDeg) / (this.endDeg + 360 - this.startDeg);
+		const iDeg = this.startDeg + this.initVal * (this.endDeg + 360 - this.startDeg) / 100;
+		const iScale = (iDeg - this.startDeg) / (this.endDeg + 360 - this.startDeg);
 		this.rangeText(iScale);
 		this.reDraw(iDeg);
-	},
-
-	getScrollDis() {
-		var x, y;
-		if (self.pageYOffset) {
-			y = self.pageYOffset;
-			x = self.pageXOffset;
-		} else if (document.documentElement && document.documentElement.scrollTop) { // Explorer 6 Strict
-			y = document.documentElement.scrollTop;
-			x = document.documentElement.scrollLeft;
-		} else if (document.body) {// all other Explorers
-			y = document.body.scrollTop;
-			x = document.body.scrollLeft;
-		}
-		return {x, y};
 	}
 
 };
@@ -253,26 +227,26 @@ Finfosoft.OnOff.prototype = {
 	buildBasicEnvironment(parentDom) {
 
 		// this.buildBasicEnvironment(parentDom);
-		var parent = document.querySelector(parentDom);
+		const parent = document.querySelector(parentDom);
 		parent.classList.add('finfosoft-onOff');
 		this.parent = parent;
 
-		var leftBtn = document.createElement('span');
+		const leftBtn = document.createElement('span');
 		leftBtn.classList.add('left');
 		this.leftBtn = leftBtn;
 		this.parent.appendChild(this.leftBtn);
 
-		var rightBtn = document.createElement('span');
+		const rightBtn = document.createElement('span');
 		rightBtn.classList.add('right');
 		this.rightBtn = rightBtn;
 		this.parent.appendChild(this.rightBtn);
 
-		var slideBar = document.createElement('p');
+		const slideBar = document.createElement('p');
 		slideBar.classList.add('slideBar');
 		this.slideBar = slideBar;
 		this.parent.appendChild(this.slideBar);
 
-		var slider = document.createElement('strong');
+		const slider = document.createElement('strong');
 		slider.classList.add('slider');
 		this.slider = slider;
 		this.parent.appendChild(this.slider);
@@ -317,13 +291,13 @@ Finfosoft.OnOff.prototype = {
 	dragSlider() {
 		this.parent.onmousedown = ev => {
 			clearTimeout(this.timer);
-			var ev = ev || window.event;
-			var startX = ev.clientX - this.getPosToDoc(this.parent).left + this.getScrollDis().x;
-			var disX = ev.clientX;
-			var isMoved = false;
+			ev = ev || window.event;
+			const startX = ev.clientX - _.getPosToDoc(this.parent).left + _.getScrollDis().x;
+			const disX = ev.clientX;
+			let isMoved = false;
 			document.onmousemove = ev => {
-				var ev = ev || window.event;
-				var curX = ev.clientX - disX + startX;
+				ev = ev || window.event;
+				const curX = ev.clientX - disX + startX;
 				if (curX > this.width / 2) {
 					this.status = 1;
 				} else {
@@ -357,24 +331,26 @@ Finfosoft.OnOff.prototype = {
 	reset() {
 		this.status = this.oldStatus;
 		this.judgeStatus();
-	},
+	}
+
+};
+
+const _ = {
 
 	//获取到document的距离
 	getPosToDoc(obj) {
-		var dis = {
-			left: 0,
-			top: 0
-		};
+		let [left, top] = [0, 0];
 		while (obj) {
-			dis.left += obj.offsetLeft;
-			dis.top += obj.offsetTop;
+			left += obj.offsetLeft;
+			top += obj.offsetTop;
 			obj = obj.offsetParent;
 		}
-		return dis;
+		return {left, top};
 	},
 
+	//获取文档滚动距离
 	getScrollDis() {
-		var x, y;
+		let [x, y] = [0, 0];
 		if (self.pageYOffset) {
 			y = self.pageYOffset;
 			x = self.pageXOffset;
@@ -388,4 +364,4 @@ Finfosoft.OnOff.prototype = {
 		return {x, y};
 	}
 
-};
+}
