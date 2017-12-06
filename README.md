@@ -12,3 +12,5 @@ Plugins for Finfosoft company
 <link rel="stylesheet" type="text/css" href="finfosoft/finfosoft.css"/>
 <script type="text/javascript" charset="utf-8" src="finfosoft/finfosoft.js"></script>
 ```
+
+123
