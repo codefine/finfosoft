@@ -27,6 +27,12 @@ var Finfosoft = {
 		this.oldStatus = opts.status;
 		this.onChanged = opts.onChanged;
 		this.init();
+	},
+	
+	loading: function (opts) {
+		this.buildBasicEnvironment(opts.el);
+		this.message = opts.msg ? opts.msg : "loading...";
+		this.onChanged = opts.onChanged;
 	}
 
 }
