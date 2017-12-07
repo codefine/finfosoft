@@ -468,13 +468,15 @@ Finfosoft.Clock.prototype = {
 			this.opts.onTimeChanged && this.opts.onTimeChanged(this.timeData);
 		}
 		this.noBtn.onclick = this.panelCtrl().hide;
-		this.unit.onblur = () => {
-			this.opts.onUnitChanged && this.opts.onUnitChanged(this.unit.value);
-		};
-		this.unit.onkeyup = (ev) => {
-			ev = ev || window.event;
-			(ev.keyCode === 13) && this.unit.blur();
-		};
+		if (this.opts.initUnit) {
+			this.unit.onblur = () => {
+				this.opts.onUnitChanged && this.opts.onUnitChanged(this.unit.value);
+			};
+			this.unit.onkeyup = (ev) => {
+				ev = ev || window.event;
+				(ev.keyCode === 13) && this.unit.blur();
+			};
+		}
 	},
 
 	//基础背景绘制
