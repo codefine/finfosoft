@@ -32,9 +32,9 @@ const Finfosoft = {
 
 	Clock: function (opts) {
 		this.opts = opts;
-		this.buildBasicEnvironment(opts.el);
 		this.mainColor = opts.mainColor ? opts.mainColor : '#1ab394';
 		this.timeData = opts.initVal ? opts.initVal : [ [0, 0], [0, 0] ];
+		this.buildBasicEnvironment(opts.el);
 		this.time.innerHTML = this.timeArrayToString(this.timeData);
 		this.init( this.timeArrayToRange(this.timeData) );
 	}
@@ -379,13 +379,22 @@ Finfosoft.Clock.prototype = {
 		this.name = name;
 		this.parent.appendChild(this.name);
 
-		if (this.opts.initUnit) {
-			const unit = document.createElement('input');
-			unit.setAttribute("type", "text");
+		if (this.opts.initPlug) {
+			const plug = document.createElement('div');
+			plug.classList.add('plug');
+			this.plug = plug;
+			const plugNum = document.createElement('input');
+			plugNum.classList.add('plugNum');
+			plugNum.setAttribute("type", "text");
+			plugNum.value = this.opts.initPlug[0] ? this.opts.initPlug[0] : 0;
+			this.oldVal = plugNum.value;
+			this.plugNum = plugNum;
+			this.plug.appendChild(this.plugNum);
+			const unit = document.createElement('span');
 			unit.classList.add('unit');
-			unit.value = this.opts.initUnit;
-			this.unit = unit;
-			this.parent.appendChild(this.unit);
+			unit.innerHTML = this.opts.initPlug[1] ? this.opts.initPlug[1] : '-';
+			this.plug.appendChild(unit);
+			this.parent.appendChild(this.plug);
 		}
 
 		const time = document.createElement('p');
@@ -432,10 +441,12 @@ Finfosoft.Clock.prototype = {
 		const yesBtn = document.createElement('span');
 		yesBtn.classList.add('yes');
 		yesBtn.innerHTML = "确定";
+		yesBtn.style.backgroundColor = this.mainColor;
 		btnBox.appendChild(yesBtn);
 		const noBtn = document.createElement('span');
 		noBtn.classList.add('no');
 		noBtn.innerHTML = "取消";
+		noBtn.style.borderColor = this.mainColor;
 		btnBox.appendChild(noBtn);
 		panel.appendChild(btnBox);
 		
@@ -452,8 +463,8 @@ Finfosoft.Clock.prototype = {
 
 	//初始化组件样式
 	setStyle() {
-		if (this.opts.initUnit) {
-			this.unit.style.color = this.mainColor;
+		if (this.opts.initPlug) {
+			this.plug.style.color = this.mainColor;
 		}
 	},
 
@@ -468,13 +479,23 @@ Finfosoft.Clock.prototype = {
 			this.opts.onTimeChanged && this.opts.onTimeChanged(this.timeData);
 		}
 		this.noBtn.onclick = this.panelCtrl().hide;
-		if (this.opts.initUnit) {
-			this.unit.onblur = () => {
-				this.opts.onUnitChanged && this.opts.onUnitChanged(this.unit.value);
+		if (this.opts.initPlug) {
+			this.plug.onclick = () => {
+				this.plugNum.focus();
 			};
-			this.unit.onkeyup = (ev) => {
+			this.plugNum.onblur = () => {
+				const newVal = parseFloat(this.plugNum.value);
+				const oldVal = parseFloat(this.oldVal);
+				if ( newVal == oldVal ) {
+					return;
+				} else {
+					this.opts.onUnitChanged && this.opts.onUnitChanged( newVal );
+					this.oldVal = newVal;
+				}
+			};
+			this.plugNum.onkeyup = (ev) => {
 				ev = ev || window.event;
-				(ev.keyCode === 13) && this.unit.blur();
+				(ev.keyCode === 13) && this.plugNum.blur();
 			};
 		}
 	},

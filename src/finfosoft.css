@@ -151,17 +151,21 @@ select{
 	font-size: 12px;
 	transition: 0.4s;
 	cursor: pointer;
+	box-sizing: border-box;
+	font-family: "微软雅黑";
 }
 .finfosoft-clock>.panel>dt>span:hover{
 	box-shadow: 0 4px 6px rgba(0, 0, 0, 0.38);
 }
 .finfosoft-clock>.panel>dt>.yes{
 	left: 25%;
-	background: #4caf50;
+	/* background: #1ab394; */
 }
 .finfosoft-clock>.panel>dt>.no{
 	right: 25%;
-	background: #f44336;
+	background: #757575;
+	border-width: 1px;
+	border-style: solid;
 }
 .finfosoft-clock>.panel>dd select{
 	transition: 0.4s;
@@ -192,6 +196,7 @@ select{
 	color: #000;
 	line-height: 25px;
 	font-weight: bold;
+	font-family: "微软雅黑";
 	transition: 0.4s;
 }
 .finfosoft-clock>.panel>dd>.box{
@@ -199,13 +204,34 @@ select{
 	text-align: center;
 	line-height: 25px;
 }
-.finfosoft-clock>.unit{
+.finfosoft-clock>.plug{
 	width: 30%;
 	height: 30px;
 	line-height: 30px;
 	position: absolute;
 	left: 35%;
 	top: calc( 50% + 15px );
+	cursor: pointer;
+}
+.finfosoft-clock>.plug>.plugNum,
+.finfosoft-clock>.plug>.unit{
+	width: 50%;
+	height: 24px;
+	line-height: 24px;
+	position: absolute;
+	top: 3px;
 	font-size: 14px;
 	font-weight: normal;
+	text-align: center;
+}
+.finfosoft-clock>.plug>.plugNum{
+	left: 0;
+	border-radius: 2px;
+	transition: 0.2s;
+}
+.finfosoft-clock>.plug>.plugNum:focus{
+	box-shadow: 0 0 6px rgba(0, 0, 0, 0.38);
+}
+.finfosoft-clock>.plug>.unit{
+	right: 0;
 }
