@@ -33,8 +33,8 @@ const Finfosoft = {
 	Clock: function (opts) {
 		this.opts = opts;
 		this.buildBasicEnvironment(opts.el);
-		this.mainColor = opts.mainColor;
-		this.timeData = opts.initVal;
+		this.mainColor = opts.mainColor ? opts.mainColor : '#1ab394';
+		this.timeData = opts.initVal ? opts.initVal : [ [0, 0], [0, 0] ];
 		this.time.innerHTML = this.timeArrayToString(this.timeData);
 		this.init( this.timeArrayToRange(this.timeData) );
 	}
