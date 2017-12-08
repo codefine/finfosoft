@@ -32,6 +32,7 @@ const Finfosoft = {
 	},
 	
 	Loading: function (opts) {
+		console.log(opts)
 		this.opacity = opts.shade ? opts.shade[0]: '0.7';
 		this.bgColor = opts.shade ? opts.shade[1]: '#ffffff';
 		this.fontColor = opts.color ? opts.color : '#000000';
@@ -355,7 +356,7 @@ Finfosoft.Loading.prototype = {
 	},
 
 	setStyle() {
-		this.parent.style.cssText='background:'+this.bgColor+',opacity:'+this.opacity;
+		this.parent.style.cssText='background:'+this.bgColor+';opacity:'+this.opacity;
 		this.parent.lastElementChild.style.color = this.fontColor;
 		this.bodyDom.style.cssText = 'overflow: hidden;height: 100%;';
 	},
