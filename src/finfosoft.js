@@ -31,10 +31,13 @@ const Finfosoft = {
 		this.init();
 	},
 	
-	loading: function (opts) {
-		this.buildBasicEnvironment(opts.el);
+	Loading: function (opts) {
+		this.opacity = opts.shade ? opts.shade[0]: '0.7';
+		this.bgColor = opts.shade ? opts.shade[1]: '#ffffff';
+		this.fontColor = opts.color ? opts.color : '#000000';
 		this.message = opts.msg ? opts.msg : "loading...";
-		this.onChanged = opts.onChanged;
+		this.time = opts.time ? opts.time : 0;
+		this.init();
 	}
 
 }
@@ -340,6 +343,57 @@ Finfosoft.OnOff.prototype = {
 	}
 
 };
+
+Finfosoft.Loading.prototype = {
+    //构造函数指针修正
+    constructor: this,
+
+	init() {
+    	this.buildBasicEnvironment();
+    	this.setStyle();
+    	this.showLoading()
+	},
+
+	setStyle() {
+		this.parent.style.cssText='background:'+this.bgColor+',opacity:'+this.opacity;
+		this.parent.lastElementChild.style.color = this.fontColor;
+		this.bodyDom.style.cssText = 'overflow: hidden;height: 100%;';
+	},
+
+    buildBasicEnvironment() {
+		const bodyDom = document.getElementsByTagName('body')[0];
+		const parent = document.createElement('div');
+        parent.classList.add('finfosft-loading');
+
+        const loadBox = document.createElement('div');
+        loadBox.classList.add('loading');
+        parent.appendChild(loadBox);
+
+		for(let i = 0; i < 5; i++){
+            const loadingSpan = document.createElement('span');
+            loadBox.appendChild(loadingSpan);
+		}
+
+		const msgBox = document.createElement('div');
+        msgBox.innerText = this.message;
+        msgBox.classList.add('msgBox');
+        parent.appendChild(msgBox);
+
+        bodyDom.appendChild(parent);
+        this.parent = parent;
+        this.bodyDom = bodyDom;
+	},
+	showLoading(){
+		this.parent.style.display = 'block';
+		if(this.time !=0){
+		   setTimeout('loading.closeLoading()',this.time);
+		}
+	},
+	closeLoading(){
+        this.bodyDom.style.overflow = '';
+        this.parent.style.display = 'none';
+	}
+}
 
 const _ = {
 
