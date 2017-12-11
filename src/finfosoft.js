@@ -364,7 +364,7 @@ Finfosoft.Clock.prototype = {
 		parent.classList.add("finfosoft-clock");
 		this.parent = parent;
 		this.width = this.parent.clientWidth;
-		this.height = this.parent.clientHeight;
+		this.height = this.width;
 
 		const canvas = document.createElement('canvas');
 		const gc = canvas.getContext('2d');
@@ -498,6 +498,7 @@ Finfosoft.Clock.prototype = {
 				(ev.keyCode === 13) && this.plugNum.blur();
 			};
 		}
+		_.canvasAutoResize(this.parent, this.canvas);
 	},
 
 	//基础背景绘制
@@ -515,8 +516,7 @@ Finfosoft.Clock.prototype = {
 		this.drawPoint(circleR, 0, 360, "gray", 1);
 		this.drawFont(fontR);
 		if (range) {
-			(range[0] !== range[1]) && this.drawPoint(circleR, range[0], range[1], this.mainColor, 2);
-			(range[0] === range[1]) && this.drawPoint(circleR, 0, 360, this.mainColor, 2);
+			this.drawPoint(circleR, range[0], range[1], this.mainColor, 2);
 		}
 	},
 
@@ -549,13 +549,20 @@ Finfosoft.Clock.prototype = {
 	drawPoint(len, beginDeg, endDeg, color, r) {
 		const [cx, cy] = [this.width/2, this.height/2];
 		const s = 5; //两点间的角度
+		const t = 0.04;
+		let tr = 0;
 		beginDeg = Math.round(beginDeg / s) * s; //规范起始点角度
 		const n = endDeg >= beginDeg ? Math.round( (endDeg - beginDeg) / 5 ) : Math.round( (endDeg - beginDeg + 360) / 5 ); //点数
 		for (let i = 0; i <= n; i ++) {
-			let deg = (beginDeg + s * i - 90) * Math.PI / 180;
-			let [px, py] = [cx + len * Math.cos( deg ), cy + len * Math.sin( deg )];
+			const deg = (beginDeg + s * i - 90) * Math.PI / 180;
+			const [px, py] = [cx + len * Math.cos( deg ), cy + len * Math.sin( deg )];
+			if (r > 1) {
+				tr = r + i * t;
+			} else {
+				tr = r;
+			}
 			this.gc.beginPath();
-			this.gc.arc(px, py, r, 0, Math.PI * 2, false);
+			this.gc.arc(px, py, tr, 0, Math.PI * 2, false);
 			this.gc.fillStyle = color;
 			this.gc.fill();
 		}
@@ -649,6 +656,14 @@ const _ = {
 		}
 		select.value = index;
 		return select;
+	},
+
+	canvasAutoResize(container, canvas) {
+		window.onresize = () => {
+			const size = container.clientWidth;
+			canvas.style.width = size + 'px';
+			canvas.style.height = size + 'px';
+		}
 	}
 
 }
