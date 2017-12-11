@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Loading</title>
+    <link rel="stylesheet" type="text/css" href="../src/finfosoft.css"/>
+    <style>
+        html,
+        body{
+            margin: 0;
+            padding: 0;
+        }
+        .app{
+            /* 宽高比 1 : 1 */
+            width: 400px;
+            height: 400px;
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            margin: -200px 0 0 -200px;
+            box-shadow: 0 0 6px rgba(0, 0, 0, .4);
+        }
+        .link{
+            width: 120px;
+            height: 30px;
+            line-height: 30px;
+            text-align: center;
+            background: black;
+            color: #fff;
+            font-weight: bold;
+            text-decoration: none;
+            position: absolute;
+            top: 0;
+            right: 0;
+        }
+        .name{
+            width: 100%;
+            text-align: center;
+            font-weight: bold;
+            line-height: 30px;
+            font-size: 20px;
+        }
+        .spc{
+            color: red;
+        }
+    </style>
+</head>
+<body>
+
+<a href="https://github.com/codefine/finfosoft/blob/master/examples/Loading.html" class="link">View Source</a>
+<p class="name">class Finfosoft.<span class="spc">Loading</span></p>
+<script type="text/javascript" charset="utf-8" src="../src/finfosoft.js"></script>
+<script>
+    var loading = new Finfosoft.Loading({
+        shade:['0.3','#000000'],
+        color:'#ffffff',
+        msg:'loading...',
+        time:4000
+    });
+</script>
+</body>
+</html>
