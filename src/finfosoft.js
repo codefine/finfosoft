@@ -37,6 +37,27 @@ const Finfosoft = {
 		this.buildBasicEnvironment(opts.el);
 		this.time.innerHTML = this.timeArrayToString(this.timeData);
 		this.init( this.timeArrayToRange(this.timeData) );
+	},
+	Selecter: function (opts) {
+		
+		this.initVal = opts.initVal;
+		this.layoutCount = opts.layoutCount ? opts.layoutCount : 5;
+		this.headerText = opts.headerText ? opts.headerText : this.initVal[0];
+		this.textIndent = opts.textIndent ? opts.textIndent : 30;
+		this.unfload = opts.unfload ? opts.unfload : false;
+		this.headerBg = opts.headerBg ? opts.headerBg : "#f9f8e8";
+		this.optionBg = opts.optionBg ? opts.optionBg : "#ffe1b6";
+		this.bottomPullBg = opts.bottomPullBg ? opts.bottomPullBg : "#f9f8e8";
+	/*	this.headerClass = opts.headerClass;
+		this.optionClass = opts.optionClass;*/
+		this.isBottomPull = opts.isBottomPull ? opts.isBottomPull : true;
+		this.bottomPullHeight = opts.bottomPullHeight ? opts.bottomPullHeight : 20;
+		this.headerHeight = opts.headerHeight ? opts.headerHeight : 30;
+		this.buildBasicEnvironment(opts.el);
+		
+		this.onChanged = opts.onChanged;
+		this.init();
+		
 	}
 
 }
@@ -608,6 +629,320 @@ Finfosoft.Clock.prototype = {
 	}
 
 };
+
+
+
+
+//Selceter插件方法
+
+Finfosoft.Selecter.prototype = {
+	
+	//构造函数指针修正
+	constructor: this,
+	
+	//插件初始化
+	init() {
+		this.setunfload(this.unfload);
+		this.optionClick();
+		this.headerClick();
+		this.bottomClick();
+		this.documentClick();
+		this.wraperOnMouseWheel();
+		this.onkeyCtrl();
+	},
+	
+	//创建基本dom环境
+	buildBasicEnvironment (parentDom) {
+		
+		const parent = document.querySelector(parentDom);
+		parent.classList.add("finfosoft-selecter");
+		this.width = parent.clientWidth;
+		this.height = parent.clientHeight;
+		
+		this.parent = parent;
+		this.optionsList = [];
+		
+		this.header = this.buildHeaderOutputDom();
+		this.parent.appendChild(this.header);
+		
+		this.headerHeight = this.header.clientHeight;
+		this.optionHeight = this.height - this.headerHeight;
+		this.itemHeight = (this.optionHeight - this.bottomPullHeight) / this.layoutCount;
+		
+		
+		this.bottomPull = this.buildBottomPull();
+		this.optionBox = this.buildOptionBox();
+		this.options = this.buildOption();
+		
+		//this.optionBox.appendChild(this.options);
+		this.optionContent = this.buildOptionContent();
+		this.optionContent.appendChild(this.options);
+		
+		this.optionBox.appendChild(this.optionContent);
+		this.optionBox.appendChild(this.bottomPull);
+		this.parent.appendChild(this.optionBox);
+		
+		
+	},
+	
+	//创建顶部输出dom
+	buildHeaderOutputDom () {
+		const headerDom = document.createElement("div");
+		headerDom.innerHTML = this.headerText;
+		headerDom.style.textIndent = this.textIndent + "px";
+		headerDom.style.background = this.headerBg;
+		headerDom.style.height = this.headerHeight + "px";
+		headerDom.style.lineHeight = this.headerHeight + "px";
+		//if(this.headerClass) headerDom.classList.add(this.headerClass);
+		return headerDom;
+	},
+	
+	//创建选项最外层容器,用于列表整体向上移动
+	buildOptionBox () {
+		
+		const optionBox = document.createElement("div");
+		optionBox.style.width = this.width + "px";
+		optionBox.style.height = this.optionHeight +"px";
+		optionBox.style.overflow = "hidden";
+		optionBox.style.webkitTransition  = 'height 0.3s';
+		//if (this.optionClass) optionBox.classList.add(this.optionClass);
+		optionBox.setAttribute("tabindex","-1");
+		optionBox.style.outline = "none";
+		return optionBox;
+	},
+	
+	//创建底部提示功能框
+	buildBottomPull () {
+		if (this.isBottomPull) {
+			const bottomPull = document.createElement("div");
+			bottomPull.style.height = this.bottomPullHeight + "px";
+			bottomPull.innerHTML = "down";
+			bottomPull.style.lineHeight = this.bottomPullHeight + "px";
+			bottomPull.style.textAlign = "center";
+			bottomPull.style.width = this.width + "px";
+			bottomPull.style.background = this.bottomPullBg;
+			return bottomPull;
+		}
+	},
+	
+	//创建第二层包裹
+	buildOptionContent () {
+		const optionContent = document.createElement("div");
+		optionContent.style.width = this.width + "px";
+		optionContent.style.height = this.optionHeight - this.bottomPullHeight + "px";
+		optionContent.style.background = this.optionBg;
+		optionContent.style.position = "relative";
+		optionContent.style.overflow = "hidden";
+
+		return optionContent;
+	},
+	
+	//创建opations及其父容器
+	buildOption () {
+		const optionWraper = document.createElement("ul");
+		optionWraper.style.width = this.width + "px";
+		optionWraper.style.position = "absolute";
+		optionWraper.style.top = "0px";
+		optionWraper.style.webkitTransition  = 'top 0.3s';
+		const initVal = this.initVal;
+		const itemHeight = this.itemHeight;
+		//optionWraper.style.height = this.initVal.length * this.layoutCount + "px"
+		let optionItem = null;
+		//先设定传入的data为array
+		if (Object.prototype.toString.call(initVal) === '[object Array]') {
+			for (let i = 0;i < initVal.length;i ++) {
+				optionItem = document.createElement("li");
+				optionItem.style.height = itemHeight + "px";
+				optionItem.style.lineHeight = itemHeight + "px";
+				optionItem.style.textIndent = this.textIndent + "px";
+				optionItem.style.cursor = "pointer";
+				optionItem.classList.add("optionsItem");
+				optionItem.innerText = initVal[i];
+				this.optionsList.push(optionItem);
+				optionWraper.appendChild(optionItem);
+			}
+		}
+		return optionWraper;
+	},
+	
+	
+	
+	
+	//设置输出内容
+	setHeaderText (txt) {
+		const header = this.header;
+		header.innerText = txt;
+	},
+	
+	//选项鼠标点击事件
+	
+	optionClick () {
+		const optionList = this.optionsList;
+		
+		let i = 0;
+	
+		const header = this.header;
+		let headerTxt = "";
+		const onChanged = this.onChanged;
+		for (; i < optionList.length;i ++) {
+			optionList[i].index = i;
+			optionList[i].onclick = () => {
+				this.unfload = false;
+				let unfload = this.unfload;
+				
+				this.setunfload(false);
+				//this.onChanged && this.onChanged(index);
+			}
+			optionList[i].addEventListener("click",function() {
+				const str = this.innerHTML;
+				headerTxt = header.innerHTML;
+				if (headerTxt != str) {
+					onChanged && onChanged(this.index,str)
+					header.innerText = str;
+				}
+				
+			},false)
+			
+			optionList[i].onmouseenter = function () {
+				this.classList.add("activeOption");
+			}
+			
+			optionList[i].onmouseleave = function () {
+				this.classList.remove("activeOption");
+			}
+		}
+
+		
+	},
+	
+	//设置展开收起
+	setunfload (unfload) {
+		//const unfload = this.unfload;
+		this.optionBox.style.height = unfload ? this.optionHeight + 'px' : 0;
+		unfload ? this.optionBox.focus() : this.optionBox.blur();
+		
+	},
+	
+	//网页别处点击收起
+	documentClick () {
+		document.onclick = (e) => {
+			this.unfload = false;
+			this.setunfload(false);
+		}
+	},
+	
+	//头部点击事件
+	headerClick () {
+		
+		this.header.onclick = (ev) => {
+			ev = ev || window.event;
+			ev.stopPropagation ? ev.stopPropagation() : ev.cancelBubble = true;
+			this.unfload = !this.unfload;
+			this.setunfload(this.unfload);
+			let unfload = this.unfload;
+		
+		}
+	},
+	
+	//底部箭头点击事件 
+	bottomClick () {
+		this.bottomPull.onclick = (e) => {
+			e.stopPropagation ? e.stopPropagation() : e.cancelBubble = true;
+			let top = this.options.offsetTop - this.optionContent.clientHeight;
+			//console.log(top/ this.itemHeight)
+			let moveupCount = Math.abs(top / this.itemHeight);
+			if (moveupCount % 1 !== 0) {
+				moveupCount = Math.round(moveupCount);
+				top = -moveupCount * this.itemHeight;
+			}
+			if (top >= 0) {
+				top = 0;
+			}
+			if (top < -(this.options.clientHeight - this.optionContent.clientHeight)) {
+				this.bottomPull.style.display = "none";
+				top = -(this.options.clientHeight - this.optionContent.clientHeight);
+				
+			} 
+			this.options.style.top = top + "px";
+		}
+	},
+	
+	//下方鼠标滚轮事件
+	wraperOnMouseWheel () {
+		this.optionBox.onmousewheel = e => {
+			
+			e.preventDefault ? e.preventDefault() : e.returnValue = false;
+			e.stopPropagation ? e.stopPropagation() : e.cancelBubble = true;
+			
+			if (e.wheelDelta > 0) {
+				this.optionsMoveUp();
+			};
+			
+			if (e.wheelDelta < 0) {
+				this.optionsMoveDown();	
+			}
+		}
+	},
+	
+	//键盘控制列表上下移动
+	onkeyCtrl () {
+		this.optionBox.onkeydown = (ev) => {
+			ev = ev || window.event;
+			
+			ev.preventDefault ? ev.preventDefault() : ev.returnValue = false;
+			
+			if (ev.keyCode == 40) {
+				ev.stopPropagation ? ev.stopPropagation() : ev.cancelBubble = true;
+				this.optionsMoveDown();
+			} else if (ev.keyCode == 38) {
+				ev.stopPropagation ? ev.stopPropagation() : ev.cancelBubble = true;
+				this.optionsMoveUp();
+			} else {
+				this.optionBox.blur();
+				return false;
+			}
+			
+			
+		}
+	},
+	
+	optionsMoveUp () {
+		let top = this.options.offsetTop + 50;
+		const bottom = this.bottomPull;
+		bottom.style.display = "block";
+		if (top >= 0) {
+			top = 0;
+		}
+		if (top < -(this.options.clientHeight - this.optionContent.clientHeight)) {
+			top = -(this.options.clientHeight - this.optionContent.clientHeight);
+			
+		}
+		this.options.style.top = top + "px";
+		
+	},
+	
+	optionsMoveDown () {
+		let top = this.options.offsetTop - 50;
+		const bottom = this.bottomPull;
+		if (top >= 0) {
+			top = 0;
+		}
+		if (top < -(this.options.clientHeight - this.optionContent.clientHeight)) {
+			top = -(this.options.clientHeight - this.optionContent.clientHeight);
+			bottom.style.display = "none";
+		}
+		this.options.style.top = top + "px";
+		
+	}
+}
+
+
+
+
+
+
+
+
 
 const _ = {
 
