@@ -42,17 +42,18 @@ const Finfosoft = {
 		
 		this.initVal = opts.initVal;
 		this.layoutCount = opts.layoutCount ? opts.layoutCount : 5;
-		this.headerText = opts.headerText ? opts.headerText : this.initVal[0];
 		this.textIndent = opts.textIndent ? opts.textIndent : 30;
 		this.unfload = opts.unfload ? opts.unfload : false;
+		this.headerText = opts.headerText ? opts.headerText : this.initVal[0];
 		this.headerBg = opts.headerBg ? opts.headerBg : "#f9f8e8";
+		this.headerHeight = opts.headerHeight ? opts.headerHeight : 30;
 		this.optionBg = opts.optionBg ? opts.optionBg : "#ffe1b6";
 		this.bottomPullBg = opts.bottomPullBg ? opts.bottomPullBg : "#f9f8e8";
 	/*	this.headerClass = opts.headerClass;
 		this.optionClass = opts.optionClass;*/
 		this.isBottomPull = opts.isBottomPull ? opts.isBottomPull : true;
 		this.bottomPullHeight = opts.bottomPullHeight ? opts.bottomPullHeight : 20;
-		this.headerHeight = opts.headerHeight ? opts.headerHeight : 30;
+		
 		this.buildBasicEnvironment(opts.el);
 		
 		this.onChanged = opts.onChanged;
@@ -665,10 +666,8 @@ Finfosoft.Selecter.prototype = {
 		this.header = this.buildHeaderOutputDom();
 		this.parent.appendChild(this.header);
 		
-		this.headerHeight = this.header.clientHeight;
 		this.optionHeight = this.height - this.headerHeight;
 		this.itemHeight = (this.optionHeight - this.bottomPullHeight) / this.layoutCount;
-		
 		
 		this.bottomPull = this.buildBottomPull();
 		this.optionBox = this.buildOptionBox();
@@ -680,9 +679,7 @@ Finfosoft.Selecter.prototype = {
 		
 		this.optionBox.appendChild(this.optionContent);
 		this.optionBox.appendChild(this.bottomPull);
-		this.parent.appendChild(this.optionBox);
-		
-		
+		this.parent.appendChild(this.optionBox);	
 	},
 	
 	//创建顶部输出dom
@@ -764,9 +761,6 @@ Finfosoft.Selecter.prototype = {
 		}
 		return optionWraper;
 	},
-	
-	
-	
 	
 	//设置输出内容
 	setHeaderText (txt) {
@@ -888,9 +882,7 @@ Finfosoft.Selecter.prototype = {
 	onkeyCtrl () {
 		this.optionBox.onkeydown = (ev) => {
 			ev = ev || window.event;
-			
 			ev.preventDefault ? ev.preventDefault() : ev.returnValue = false;
-			
 			if (ev.keyCode == 40) {
 				ev.stopPropagation ? ev.stopPropagation() : ev.cancelBubble = true;
 				this.optionsMoveDown();
@@ -901,8 +893,6 @@ Finfosoft.Selecter.prototype = {
 				this.optionBox.blur();
 				return false;
 			}
-			
-			
 		}
 	},
 	
@@ -935,13 +925,6 @@ Finfosoft.Selecter.prototype = {
 		
 	}
 }
-
-
-
-
-
-
-
 
 
 const _ = {
