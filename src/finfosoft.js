@@ -59,7 +59,7 @@ const Finfosoft = {
 		this.bottomPullBg = opts.bottomPullBg ? opts.bottomPullBg : "#f9f8e8";
 	/*	this.headerClass = opts.headerClass;
 		this.optionClass = opts.optionClass;*/
-		this.isBottomPull = opts.isBottomPull ? opts.isBottomPull : true;
+		this.isBottomPull = opts.isBottomPull !== undefined ? opts.isBottomPull : true;
 		this.bottomPullHeight = opts.bottomPullHeight ? opts.bottomPullHeight : 20;
 		
 		this.buildBasicEnvironment(opts.el);
@@ -710,7 +710,7 @@ Finfosoft.Selecter.prototype = {
 		this.setunfload(this.unfload);
 		this.optionClick();
 		this.headerClick();
-		this.bottomClick();
+		if (this.isBottomPull) this.bottomClick();
 		this.documentClick();
 		this.wraperOnMouseWheel();
 		this.onkeyCtrl();
@@ -742,7 +742,7 @@ Finfosoft.Selecter.prototype = {
 		this.optionContent.appendChild(this.options);
 		
 		this.optionBox.appendChild(this.optionContent);
-		this.optionBox.appendChild(this.bottomPull);
+		if(this.isBottomPull) this.optionBox.appendChild(this.bottomPull);
 		this.parent.appendChild(this.optionBox);	
 	},
 	
@@ -904,24 +904,26 @@ Finfosoft.Selecter.prototype = {
 	
 	//底部箭头点击事件 
 	bottomClick () {
-		this.bottomPull.onclick = (e) => {
-			e.stopPropagation ? e.stopPropagation() : e.cancelBubble = true;
-			let top = this.options.offsetTop - this.optionContent.clientHeight;
-			//console.log(top/ this.itemHeight)
-			let moveupCount = Math.abs(top / this.itemHeight);
-			if (moveupCount % 1 !== 0) {
-				moveupCount = Math.round(moveupCount);
-				top = -moveupCount * this.itemHeight;
+		if(this.isBottomPull) {
+			this.bottomPull.onclick = (e) => {
+				e.stopPropagation ? e.stopPropagation() : e.cancelBubble = true;
+				let top = this.options.offsetTop - this.optionContent.clientHeight;
+				//console.log(top/ this.itemHeight)
+				let moveupCount = Math.abs(top / this.itemHeight);
+				if (moveupCount % 1 !== 0) {
+					moveupCount = Math.round(moveupCount);
+					top = -moveupCount * this.itemHeight;
+				}
+				if (top >= 0) {
+					top = 0;
+				}
+				if (top < -(this.options.clientHeight - this.optionContent.clientHeight)) {
+					this.bottomPull.style.display = "none";
+					top = -(this.options.clientHeight - this.optionContent.clientHeight);
+					
+				} 
+				this.options.style.top = top + "px";
 			}
-			if (top >= 0) {
-				top = 0;
-			}
-			if (top < -(this.options.clientHeight - this.optionContent.clientHeight)) {
-				this.bottomPull.style.display = "none";
-				top = -(this.options.clientHeight - this.optionContent.clientHeight);
-				
-			} 
-			this.options.style.top = top + "px";
 		}
 	},
 	
@@ -963,7 +965,7 @@ Finfosoft.Selecter.prototype = {
 	optionsMoveUp () {
 		let top = this.options.offsetTop + 50;
 		const bottom = this.bottomPull;
-		bottom.style.display = "block";
+		if (this.isBottomPull) bottom.style.display = "block";
 		if (top >= 0) {
 			top = 0;
 		}
