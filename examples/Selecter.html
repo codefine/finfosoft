@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>Document</title>
+		<link rel="stylesheet" type="text/css" href="../src/finfosoft.css"/>
+		<style type="text/css">
+			*{
+				margin: 0;
+				padding: 0;
+			}
+			
+			body{
+				height: 2000px;
+			}
+			
+			#test{
+				width:150px;
+				height: 200px;
+				margin: 270px auto;
+			/*	 box-shadow: 0 0 6px rgba(0, 0, 0, .4);*/
+			}
+			
+			.activeOption{
+				background: cyan;
+			}
+			.link{
+	            width: 120px;
+	            height: 30px;
+	            line-height: 30px;
+	            text-align: center;
+	            background: black;
+	            color: #fff;
+	            font-weight: bold;
+	            text-decoration: none;
+	            position: absolute;
+	            top: 0;
+	            right: 0;
+	        }
+	        .name{
+	            width: 100%;
+	            text-align: center;
+	            font-weight: bold;
+	            line-height: 30px;
+	            font-size: 20px;
+	        }
+	        .spc{
+	            color: red;
+	        }
+			
+		</style>
+	</head>
+	<body>
+		<p class="name">class Finfosoft.<span class="spc">Selecter</span></p>
+		<a href="https://github.com/codefine/finfosoft/blob/master/examples/Selecter.html" class="link">View Source</a>
+		
+		<div id="test"></div>
+		
+		
+		<script src="../src/finfosoft.js" type="text/javascript" charset="utf-8"></script>
+		<script type="text/javascript">
+			new Finfosoft.Selecter({
+				el : "#test",                              
+				initVal : [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20],
+				headerText : "测试",
+				layoutCount : 5,
+				textIndent : 30,
+				headerBg : "#f9f8e8",
+				headerHeight : 30,
+				optionBg : "#ffe1b6",
+				isBottomPull : true,
+				bottomPullHeight : 20,
+				bottomPullBg : "#f9f8e8", 
+				unfload : true,                              //初始化时下方下拉菜单是否展开
+				onChanged: function(index,value) {
+					console.log("index ==" + index + "---" + typeof(index));
+					console.log("value ==" + value + "---" + typeof(value));
+				}
+			})
+	
+			
+		</script>
+		
+	</body>
+	
+</html>
