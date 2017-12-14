@@ -52,9 +52,9 @@ const Finfosoft = {
 		this.layoutCount = opts.layoutCount ? opts.layoutCount : 5;
 		this.textIndent = opts.textIndent ? opts.textIndent : 30;
 		this.unfload = opts.unfload !== undefined ? opts.unfload : false;
-		this.barBg = opts.barBg ? opts.barBg : "#ee712b";
+		this.barBg = opts.barBg ? opts.barBg : "rgba(0, 0, 0, .38)";
 		this.optionBg = opts.optionBg ? opts.optionBg : "#ffe1b6";
-		this.dragBg = opts.dragBg ? opts.dragBg : "#8e3343";
+		this.dragBg = opts.dragBg ? opts.dragBg : "#000";
 		this.itemHeight = opts.itemHeight ? opts.itemHeight : 30;
 		this.buildBasicEnvironment(opts.el);
 		this.onChanged = opts.onChanged;
@@ -99,7 +99,7 @@ Finfosoft.Ring.prototype = {
 	//创建基本dom环境
 	buildBasicEnvironment(parentDom) {
 		const parent = document.querySelector(parentDom);
-		parent.classList.add("finfosoft-ring");
+		parent.classList.add("finfosoft-ring", "finfosoft");
 		this.parent = parent;
 		this.width = this.parent.clientWidth;
 		this.height = this.parent.clientHeight;
@@ -259,7 +259,7 @@ Finfosoft.OnOff.prototype = {
 
 		// this.buildBasicEnvironment(parentDom);
 		const parent = document.querySelector(parentDom);
-		parent.classList.add('finfosoft-onOff');
+		parent.classList.add('finfosoft-onOff', "finfosoft");
 		this.parent = parent;
 
 		const leftBtn = document.createElement('span');
@@ -382,7 +382,7 @@ Finfosoft.Clock.prototype = {
 	//创建基本dom环境
 	buildBasicEnvironment(parentDom) {
 		const parent = document.querySelector(parentDom);
-		parent.classList.add("finfosoft-clock");
+		parent.classList.add("finfosoft-clock", "finfosoft");
 		this.parent = parent;
 		this.width = this.parent.clientWidth;
 		this.height = this.width;
@@ -657,7 +657,7 @@ Finfosoft.Loading.prototype = {
     buildBasicEnvironment() {
 		const bodyDom = document.getElementsByTagName('body')[0];
 		const parent = document.createElement('div');
-        parent.classList.add('finfosft-loading');
+        parent.classList.add('finfosft-loading', "finfosoft");
 
         const loadBox = document.createElement('div');
         loadBox.classList.add('loading');
@@ -698,6 +698,7 @@ Finfosoft.Selecter.prototype = {
 	
 	//插件初始化
 	init() {
+		this.selectedVal = "";
 		this.setunfload(this.unfload);
 		this.optionClick();
 		if (this.isBottomPull) this.bottomClick();
@@ -711,7 +712,7 @@ Finfosoft.Selecter.prototype = {
 	buildBasicEnvironment (parentDom) {
 		this.renderVal = this.initVal[0];
 		const parent = document.querySelector(parentDom);
-		parent.classList.add("finfosoft-selecter");
+		parent.classList.add("finfosoft-selecter", "finfosoft");
 		this.width = parent.clientWidth;
 
 		this.height = this.renderVal.length > this.layoutCount ? this.layoutCount * this.itemHeight : this.renderVal.length * this.itemHeight;
@@ -746,7 +747,6 @@ Finfosoft.Selecter.prototype = {
 		optionBox.style.width = this.width + "px";
 		optionBox.style.height = this.height +"px";
 		optionBox.style.overflow = "hidden";
-		//optionBox.style.webkitTransition  = 'height 0.3s';
 		optionBox.setAttribute("tabindex","-1");
 		optionBox.style.outline = "none";
 		optionBox.style.position = "relative";
@@ -762,7 +762,6 @@ Finfosoft.Selecter.prototype = {
 		optionWraper.style.top = "0px";
 		const initVal = this.initVal;
 		const itemHeight = this.itemHeight;
-		//optionWraper.style.height = this.initVal.length * this.layoutCount + "px"
 		let optionItem = null;
 		//先设定传入的data为array
 		if (Object.prototype.toString.call(initVal) === '[object Array]') {
@@ -774,11 +773,10 @@ Finfosoft.Selecter.prototype = {
 				optionItem.style.textIndent = this.textIndent + "px";
 				optionItem.style.cursor = "pointer";
 				optionItem.classList.add("optionsItem");
-				//optionItem.innerText = initVal[i];
 				if(initVal.length === 1 && initVal[0][i].name) {
 					optionItem.innerText = initVal[0][i].name;
 				} else if(initVal.length === 2) {
-					const key = initVal[1]
+					const key = initVal[1];
 					optionItem.innerText = initVal[0][i][key];
 				}
 				this.optionsList.push(optionItem);
@@ -791,21 +789,15 @@ Finfosoft.Selecter.prototype = {
 	//buildscrollbar  创建滚动条
 	buildScrollbar () {
 		const bar = document.createElement("div");
-		bar.style.position = "absolute";
+		bar.classList.add("selecter-bar");
 		bar.style.height = this.barHeight + "px";
-		bar.style.width = "4px";
 		bar.style.background = this.barBg;
-		bar.style.top = "5px";
-		bar.style.right = "5px";
-		bar.style.zIndex = "100"
 		return bar;
 	},
 	
 	//创建滚动条的滑块
 	buildBarDrag () {
 		const drag = document.createElement("div");
-		drag.style.position = "absolute";
-		drag.style.width = "4px";
 		drag.style.height = this.dragHeight + "px";
 		drag.style.background = this.dragBg;
 		return drag;
@@ -815,8 +807,7 @@ Finfosoft.Selecter.prototype = {
 	optionClick () {
 		const optionList = this.optionsList;
 		let i = 0;
-		const header = this.header;
-		let headerTxt = "";
+		let selectedVal = this.selectedVal;
 		const onChanged = this.onChanged;
 		for (; i < optionList.length;i ++) {
 			optionList[i].index = i;
@@ -824,14 +815,12 @@ Finfosoft.Selecter.prototype = {
 				this.unfload = false;
 				let unfload = this.unfload;
 				this.setunfload(false);
-				//this.onChanged && this.onChanged(index);
 			}
 			optionList[i].addEventListener("click",function() {
-				const str = this.innerHTML;
-				//headerTxt = header.innerHTML;
-				if (headerTxt != str) {
+				const str = this.innerHTML;		
+				if (selectedVal != str) {
 					onChanged && onChanged(this.index)
-					//header.innerText = str;
+					selectedVal = this.innerHTML;
 				}
 			},false)
 			
@@ -864,6 +853,7 @@ Finfosoft.Selecter.prototype = {
 	
 	//下方鼠标滚轮事件
 	wraperOnMouseWheel () {
+		
 		this.optionBox.onmousewheel = e => {
 			e.preventDefault ? e.preventDefault() : e.returnValue = false;
 			e.stopPropagation ? e.stopPropagation() : e.cancelBubble = true;

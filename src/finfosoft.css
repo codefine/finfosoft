@@ -6,8 +6,8 @@ p,ul,dl,dd,dt{
 li{
 	list-style: none;
 }
-input,
-select{
+.finfosoft input,
+.finfosoft select{
 	display: block;
 	margin: 0;
 	padding: 0;
@@ -296,3 +296,16 @@ select{
 	-webkit-animation-delay:0.8s;
 }
 
+.finfosoft-selecter .selecter-bar{
+	border-radius: 2px;
+	width:4px;
+	position: absolute;
+	top: 5px;
+	right: 5px;
+	z-index: 100;
+}
+.finfosoft-selecter .selecter-bar>div{
+	border-radius: 2px;
+	position: absolute;
+	width: 4px;
+}
