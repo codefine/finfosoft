@@ -51,24 +51,15 @@ const Finfosoft = {
 		this.initVal = opts.initVal;
 		this.layoutCount = opts.layoutCount ? opts.layoutCount : 5;
 		this.textIndent = opts.textIndent ? opts.textIndent : 30;
-		this.unfload = opts.unfload ? opts.unfload : false;
-		this.headerText = opts.headerText ? opts.headerText : this.initVal[0];
-		this.headerBg = opts.headerBg ? opts.headerBg : "#f9f8e8";
-		this.headerHeight = opts.headerHeight ? opts.headerHeight : 30;
+		this.unfload = opts.unfload !== undefined ? opts.unfload : false;
+		this.barBg = opts.barBg ? opts.barBg : "#ee712b";
 		this.optionBg = opts.optionBg ? opts.optionBg : "#ffe1b6";
-		this.bottomPullBg = opts.bottomPullBg ? opts.bottomPullBg : "#f9f8e8";
-	/*	this.headerClass = opts.headerClass;
-		this.optionClass = opts.optionClass;*/
-		this.isBottomPull = opts.isBottomPull !== undefined ? opts.isBottomPull : true;
-		this.bottomPullHeight = opts.bottomPullHeight ? opts.bottomPullHeight : 20;
-		
+		this.dragBg = opts.dragBg ? opts.dragBg : "#8e3343";
+		this.itemHeight = opts.itemHeight ? opts.itemHeight : 30;
 		this.buildBasicEnvironment(opts.el);
-		
 		this.onChanged = opts.onChanged;
 		this.init();
-		
 	}
-
 }
 
 //工具库
@@ -709,53 +700,43 @@ Finfosoft.Selecter.prototype = {
 	init() {
 		this.setunfload(this.unfload);
 		this.optionClick();
-		this.headerClick();
 		if (this.isBottomPull) this.bottomClick();
-		this.documentClick();
+		//this.documentClick();
 		this.wraperOnMouseWheel();
 		this.onkeyCtrl();
+		this.onDrag();
 	},
 	
 	//创建基本dom环境
 	buildBasicEnvironment (parentDom) {
-		
+		this.renderVal = this.initVal[0];
 		const parent = document.querySelector(parentDom);
 		parent.classList.add("finfosoft-selecter");
 		this.width = parent.clientWidth;
-		this.height = parent.clientHeight;
-		
+
+		this.height = this.renderVal.length > this.layoutCount ? this.layoutCount * this.itemHeight : this.renderVal.length * this.itemHeight;
+		parent.style.height = this.height + "px";
 		this.parent = parent;
 		this.optionsList = [];
-		
-		this.header = this.buildHeaderOutputDom();
-		this.parent.appendChild(this.header);
-		
-		this.optionHeight = this.height - this.headerHeight;
-		this.itemHeight = (this.optionHeight - this.bottomPullHeight) / this.layoutCount;
-		
-		this.bottomPull = this.buildBottomPull();
+		this.barHeight = this.height - 10;
+		this.dragHeight = this.height * this.barHeight / (this.renderVal.length * this.itemHeight);
+		this.optionHeight = this.height;
+
 		this.optionBox = this.buildOptionBox();
 		this.options = this.buildOption();
+		//this.optionContent = this.buildOptionContent();
+		this.scrollBar = this.buildScrollbar();
+		this.scrollBarDrag = this.buildBarDrag();
+		//this.optionContent.appendChild(this.options);
 		
-		//this.optionBox.appendChild(this.options);
-		this.optionContent = this.buildOptionContent();
-		this.optionContent.appendChild(this.options);
-		
-		this.optionBox.appendChild(this.optionContent);
-		if(this.isBottomPull) this.optionBox.appendChild(this.bottomPull);
+		if (this.itemHeight * this.renderVal.length > this.height) {
+			this.scrollBar.appendChild(this.scrollBarDrag);
+			this.optionBox.appendChild(this.scrollBar);
+			
+		}
+		this.optionBox.appendChild(this.options);
+
 		this.parent.appendChild(this.optionBox);	
-	},
-	
-	//创建顶部输出dom
-	buildHeaderOutputDom () {
-		const headerDom = document.createElement("div");
-		headerDom.innerHTML = this.headerText;
-		headerDom.style.textIndent = this.textIndent + "px";
-		headerDom.style.background = this.headerBg;
-		headerDom.style.height = this.headerHeight + "px";
-		headerDom.style.lineHeight = this.headerHeight + "px";
-		//if(this.headerClass) headerDom.classList.add(this.headerClass);
-		return headerDom;
 	},
 	
 	//创建选项最外层容器,用于列表整体向上移动
@@ -763,39 +744,14 @@ Finfosoft.Selecter.prototype = {
 		
 		const optionBox = document.createElement("div");
 		optionBox.style.width = this.width + "px";
-		optionBox.style.height = this.optionHeight +"px";
+		optionBox.style.height = this.height +"px";
 		optionBox.style.overflow = "hidden";
-		optionBox.style.webkitTransition  = 'height 0.3s';
-		//if (this.optionClass) optionBox.classList.add(this.optionClass);
+		//optionBox.style.webkitTransition  = 'height 0.3s';
 		optionBox.setAttribute("tabindex","-1");
 		optionBox.style.outline = "none";
+		optionBox.style.position = "relative";
+		optionBox.style.background = this.optionBg;
 		return optionBox;
-	},
-	
-	//创建底部提示功能框
-	buildBottomPull () {
-		if (this.isBottomPull) {
-			const bottomPull = document.createElement("div");
-			bottomPull.style.height = this.bottomPullHeight + "px";
-			bottomPull.innerHTML = "down";
-			bottomPull.style.lineHeight = this.bottomPullHeight + "px";
-			bottomPull.style.textAlign = "center";
-			bottomPull.style.width = this.width + "px";
-			bottomPull.style.background = this.bottomPullBg;
-			return bottomPull;
-		}
-	},
-	
-	//创建第二层包裹
-	buildOptionContent () {
-		const optionContent = document.createElement("div");
-		optionContent.style.width = this.width + "px";
-		optionContent.style.height = this.optionHeight - this.bottomPullHeight + "px";
-		optionContent.style.background = this.optionBg;
-		optionContent.style.position = "relative";
-		optionContent.style.overflow = "hidden";
-
-		return optionContent;
 	},
 	
 	//创建opations及其父容器
@@ -804,21 +760,27 @@ Finfosoft.Selecter.prototype = {
 		optionWraper.style.width = this.width + "px";
 		optionWraper.style.position = "absolute";
 		optionWraper.style.top = "0px";
-		optionWraper.style.webkitTransition  = 'top 0.3s';
 		const initVal = this.initVal;
 		const itemHeight = this.itemHeight;
 		//optionWraper.style.height = this.initVal.length * this.layoutCount + "px"
 		let optionItem = null;
 		//先设定传入的data为array
 		if (Object.prototype.toString.call(initVal) === '[object Array]') {
-			for (let i = 0;i < initVal.length;i ++) {
+			
+			for (let i = 0;i < initVal[0].length;i ++) {
 				optionItem = document.createElement("li");
 				optionItem.style.height = itemHeight + "px";
 				optionItem.style.lineHeight = itemHeight + "px";
 				optionItem.style.textIndent = this.textIndent + "px";
 				optionItem.style.cursor = "pointer";
 				optionItem.classList.add("optionsItem");
-				optionItem.innerText = initVal[i];
+				//optionItem.innerText = initVal[i];
+				if(initVal.length === 1 && initVal[0][i].name) {
+					optionItem.innerText = initVal[0][i].name;
+				} else if(initVal.length === 2) {
+					const key = initVal[1]
+					optionItem.innerText = initVal[0][i][key];
+				}
 				this.optionsList.push(optionItem);
 				optionWraper.appendChild(optionItem);
 			}
@@ -826,19 +788,33 @@ Finfosoft.Selecter.prototype = {
 		return optionWraper;
 	},
 	
-	//设置输出内容
-	setHeaderText (txt) {
-		const header = this.header;
-		header.innerText = txt;
+	//buildscrollbar  创建滚动条
+	buildScrollbar () {
+		const bar = document.createElement("div");
+		bar.style.position = "absolute";
+		bar.style.height = this.barHeight + "px";
+		bar.style.width = "4px";
+		bar.style.background = this.barBg;
+		bar.style.top = "5px";
+		bar.style.right = "5px";
+		bar.style.zIndex = "100"
+		return bar;
+	},
+	
+	//创建滚动条的滑块
+	buildBarDrag () {
+		const drag = document.createElement("div");
+		drag.style.position = "absolute";
+		drag.style.width = "4px";
+		drag.style.height = this.dragHeight + "px";
+		drag.style.background = this.dragBg;
+		return drag;
 	},
 	
 	//选项鼠标点击事件
-	
 	optionClick () {
 		const optionList = this.optionsList;
-		
 		let i = 0;
-	
 		const header = this.header;
 		let headerTxt = "";
 		const onChanged = this.onChanged;
@@ -847,18 +823,16 @@ Finfosoft.Selecter.prototype = {
 			optionList[i].onclick = () => {
 				this.unfload = false;
 				let unfload = this.unfload;
-				
 				this.setunfload(false);
 				//this.onChanged && this.onChanged(index);
 			}
 			optionList[i].addEventListener("click",function() {
 				const str = this.innerHTML;
-				headerTxt = header.innerHTML;
+				//headerTxt = header.innerHTML;
 				if (headerTxt != str) {
-					onChanged && onChanged(this.index,str)
-					header.innerText = str;
+					onChanged && onChanged(this.index)
+					//header.innerText = str;
 				}
-				
 			},false)
 			
 			optionList[i].onmouseenter = function () {
@@ -869,77 +843,36 @@ Finfosoft.Selecter.prototype = {
 				this.classList.remove("activeOption");
 			}
 		}
-
-		
 	},
 	
 	//设置展开收起
 	setunfload (unfload) {
 		//const unfload = this.unfload;
-		this.optionBox.style.height = unfload ? this.optionHeight + 'px' : 0;
+		this.optionBox.style.height = unfload ? this.height + 'px' : 0;
+		this.parent.style.height = unfload ? this.height + 'px' : 0;
 		unfload ? this.optionBox.focus() : this.optionBox.blur();
-		
 	},
 	
-	//网页别处点击收起
+/*	//网页别处点击收起
 	documentClick () {
 		document.onclick = (e) => {
 			this.unfload = false;
 			this.setunfload(false);
 		}
-	},
-	
-	//头部点击事件
-	headerClick () {
-		
-		this.header.onclick = (ev) => {
-			ev = ev || window.event;
-			ev.stopPropagation ? ev.stopPropagation() : ev.cancelBubble = true;
-			this.unfload = !this.unfload;
-			this.setunfload(this.unfload);
-			let unfload = this.unfload;
-		
-		}
-	},
-	
-	//底部箭头点击事件 
-	bottomClick () {
-		if(this.isBottomPull) {
-			this.bottomPull.onclick = (e) => {
-				e.stopPropagation ? e.stopPropagation() : e.cancelBubble = true;
-				let top = this.options.offsetTop - this.optionContent.clientHeight;
-				//console.log(top/ this.itemHeight)
-				let moveupCount = Math.abs(top / this.itemHeight);
-				if (moveupCount % 1 !== 0) {
-					moveupCount = Math.round(moveupCount);
-					top = -moveupCount * this.itemHeight;
-				}
-				if (top >= 0) {
-					top = 0;
-				}
-				if (top < -(this.options.clientHeight - this.optionContent.clientHeight)) {
-					this.bottomPull.style.display = "none";
-					top = -(this.options.clientHeight - this.optionContent.clientHeight);
-					
-				} 
-				this.options.style.top = top + "px";
-			}
-		}
-	},
+	},*/
+
 	
 	//下方鼠标滚轮事件
 	wraperOnMouseWheel () {
 		this.optionBox.onmousewheel = e => {
-			
 			e.preventDefault ? e.preventDefault() : e.returnValue = false;
 			e.stopPropagation ? e.stopPropagation() : e.cancelBubble = true;
-			
 			if (e.wheelDelta > 0) {
-				this.optionsMoveUp();
+				this.optionsMoveDown();
 			};
 			
 			if (e.wheelDelta < 0) {
-				this.optionsMoveDown();	
+				this.optionsMoveUp();
 			}
 		}
 	},
@@ -951,10 +884,10 @@ Finfosoft.Selecter.prototype = {
 			ev.preventDefault ? ev.preventDefault() : ev.returnValue = false;
 			if (ev.keyCode == 40) {
 				ev.stopPropagation ? ev.stopPropagation() : ev.cancelBubble = true;
-				this.optionsMoveDown();
+				this.optionsMoveUp();
 			} else if (ev.keyCode == 38) {
 				ev.stopPropagation ? ev.stopPropagation() : ev.cancelBubble = true;
-				this.optionsMoveUp();
+				this.optionsMoveDown();
 			} else {
 				this.optionBox.blur();
 				return false;
@@ -962,33 +895,67 @@ Finfosoft.Selecter.prototype = {
 		}
 	},
 	
-	optionsMoveUp () {
-		let top = this.options.offsetTop + 50;
-		const bottom = this.bottomPull;
-		if (this.isBottomPull) bottom.style.display = "block";
-		if (top >= 0) {
-			top = 0;
+	//滑块拖拽
+	onDrag () {
+		const drag = this.scrollBarDrag;
+		const bar = this.scrollBar;
+		const content = this.options;
+		const wraper = this.optionBox;
+		drag.onmousedown = (ev) => {
+			ev = ev || window.event;
+			ev.preventDefault ? ev.preventDefault() : ev.returnValue = false;
+			ev.stopPropagation ? ev.stopPropagation() : ev.cancelBubble = true;
+			let d_bkt = ev.clientY - drag.offsetTop;
+			document.onmousemove = (ev) => {
+				ev = ev || window.event;
+				var top = ev.clientY - d_bkt;
+				if (top <= 0) {
+					top = 0;
+				};
+				if (top >= bar.clientHeight - drag.clientHeight) {
+					top = bar.clientHeight - drag.clientHeight;
+				};
+				var scale = top / (bar.clientHeight - drag.clientHeight);
+				var cony = scale * (content.clientHeight - wraper.clientHeight);
+				drag.style.top = top + 'px';
+				content.style.top = -cony + 'px';
+			}
 		}
-		if (top < -(this.options.clientHeight - this.optionContent.clientHeight)) {
-			top = -(this.options.clientHeight - this.optionContent.clientHeight);
-			
+		document.onmouseup = (e) => {
+			e.stopPropagation ? e.stopPropagation() : e.cancelBubble = true;
+			document.onmousemove = null;
 		}
-		this.options.style.top = top + "px";
-		
 	},
 	
 	optionsMoveDown () {
-		let top = this.options.offsetTop - 50;
-		const bottom = this.bottomPull;
-		if (top >= 0) {
-			top = 0;
-		}
-		if (top < -(this.options.clientHeight - this.optionContent.clientHeight)) {
-			top = -(this.options.clientHeight - this.optionContent.clientHeight);
-			bottom.style.display = "none";
-		}
-		this.options.style.top = top + "px";
+		let t = this.options.offsetTop + this.dragHeight;
 		
+		if (t >= 0) {
+			t = 0;
+		}
+		if (t < -(this.options.clientHeight - this.optionBox.clientHeight)) {
+			t = -(this.options.clientHeight - this.optionBox.clientHeight);
+		};
+		let scale = t / (this.options.clientHeight - this.optionBox.clientHeight);
+		let top = scale * (this.scrollBar.clientHeight - this.scrollBarDrag.clientHeight);
+		this.options.style.top = t + "px";
+		this.scrollBarDrag.style.top = -top + "px"
+		
+	},
+	
+	optionsMoveUp () {
+		let t = this.options.offsetTop - this.scrollBarDrag.offsetHeight;
+			
+		if (t >= 0) {
+			t = 0;
+		}
+		if (t < -(this.options.clientHeight - this.optionBox.clientHeight)) {
+			t = -(this.options.clientHeight - this.optionBox.clientHeight);
+		};
+		let scale = t / (this.options.clientHeight - this.optionBox.clientHeight);
+		let top = scale * (this.scrollBar.clientHeight - this.scrollBarDrag.clientHeight);
+		this.options.style.top = t + "px";
+		this.scrollBarDrag.style.top = -top + "px";
 	}
 }
 

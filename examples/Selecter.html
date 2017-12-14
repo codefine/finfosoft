@@ -16,9 +16,9 @@
 			
 			#test{
 				width:150px;
-				height: 200px;
+				-webkit-transition: all 0.3s;
 				margin: 270px auto;
-			/*	 box-shadow: 0 0 6px rgba(0, 0, 0, .4);*/
+				 box-shadow: 0 0 6px rgba(0, 0, 0, .4);
 			}
 			
 			.activeOption{
@@ -48,35 +48,50 @@
 	            color: red;
 	        }
 			
+			
 		</style>
 	</head>
 	<body>
+		<button id="btn">1123</button>
 		<p class="name">class Finfosoft.<span class="spc">Selecter</span></p>
 		<a href="https://github.com/codefine/finfosoft/blob/master/examples/Selecter.html" class="link">View Source</a>
 		
 		<div id="test"></div>
 		
-		
 		<script src="../src/finfosoft.js" type="text/javascript" charset="utf-8"></script>
 		<script type="text/javascript">
+			
+			var data = [[
+					{"name":"ss1","id":1,"device_name":'qwe'},
+					{"name":"ss2","id":2,"device_name":'sgfd'},
+					{"name":"ss3","id":3,"device_name":'fghj'},
+					{"name":"ss4","id":4,"device_name":'xcvb'},
+					{"name":"ss5","id":5,"device_name":'ASD'},
+					{"name":"ss6","id":6,"device_name":'FGH'},
+					{"name":"ss7","id":7,"device_name":'CXVB'},
+					{"name":"ss8","id":8,"device_name":'dsa'},
+					{"name":"ss9","id":9,"device_name":'FGqdsH'},
+					{"name":"ss10","id":0,"device_name":'CXVdsB'}
+				],"name"]
+			
+		
 			new Finfosoft.Selecter({
 				el : "#test",                              
-				initVal : [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23],
-				headerText : "测试",
-				layoutCount : 5,
+				initVal : data,
+				layoutCount : 4,
 				textIndent : 30,
-				headerBg : "#f9f8e8",
-				headerHeight : 30,
+				itemHeight : 30,
 				optionBg : "#ffe1b6",
-				isBottomPull : false,
-				bottomPullHeight : 20,
-				bottomPullBg : "#f9f8e8", 
+				barBg:"#ee712b",
+				dragBg:"#8e3343",
 				unfload : true,                              //初始化时下方下拉菜单是否展开
-				onChanged: function(index,value) {
+				onChanged: function(index) {
 					console.log("index ==" + index + "---" + typeof(index));
-					console.log("value ==" + value + "---" + typeof(value));
+					
 				}
 			})
+			
+			
 	
 			
 		</script>
