@@ -11,6 +11,8 @@ const Finfosoft = {
 		this.bgColor = opts.bgColor ? opts.bgColor : '#eeeeee';
 		this.mainColor = opts.mainColor ? opts.mainColor : '#66ee66';
 		this.initVal = opts.initVal ? opts.initVal : (this.input.value ? this.input.value : 0);
+		this.maxVal = opts.maxVal ? opts.maxVal : 100;
+		this.precision = opts.precision ? opts.precision : 0;
 		this.radius = (this.width - this.lineWidth) / 2;
 		this.init();
 	},
@@ -93,7 +95,7 @@ Finfosoft.Ring.prototype = {
 			this.keyup(ev);
 		}
 		this.initValue(this.initVal);
-		this.reDraw(this.startDeg + this.input.value * (this.endDeg + 360 - this.startDeg) / 100);
+		this.reDraw(this.startDeg + this.input.value * (this.endDeg + 360 - this.startDeg) / this.maxVal);
 	},
 
 	//创建基本dom环境
@@ -121,17 +123,15 @@ Finfosoft.Ring.prototype = {
 	initValue(val) {
 		if (val < 0) {
 			this.input.value = 0;
-		} else if (val > 100) {
-			this.input.value = 100;
-		} else {
-			this.input.value = parseInt(val);
 		}
-		this.input.style.width = 0.3 * this.width + 'px';
+		this.input.value = _.makePrecision(val, this.precision);
+		this.input.style.width = this.width + 'px';
 		this.input.style.fontSize = 0.16 * this.width + 'px';
 		this.input.style.lineHeight = 0.16 * this.width + 'px';
 		this.input.style.color = this.mainColor;
 		this.input.style.left = (this.width - this.input.clientWidth) / 2 + 'px';
 		this.input.style.top = (this.height - this.input.clientHeight) / 2 + 'px';
+		this.input.style.backgroundColor = "transparent";
 	},
 
 	//基础线条绘制
@@ -176,6 +176,7 @@ Finfosoft.Ring.prototype = {
 
 	//鼠标按下时进度条响应
 	mousedown(ev) {
+		if (ev.target === this.input) return;
 		const x = ev.clientX - _.getPosToDoc(this.canvas).left + _.getScrollDis().x;
 		const y = ev.clientY - _.getPosToDoc(this.canvas).top + _.getScrollDis().y;
 		this.mouseCtrl(x, y);
@@ -197,7 +198,8 @@ Finfosoft.Ring.prototype = {
 
 	//数值按比例响应
 	rangeText(scale) {
-		this.input.value = Math.round(scale * 100);
+		const unRegVal = _.makePrecision(scale * this.maxVal, this.precision);
+		this.input.value = unRegVal;
 	},
 
 	//输入框获取焦点
@@ -212,7 +214,7 @@ Finfosoft.Ring.prototype = {
 			this.input.value = this.input.origVal;
 			return;
 		}
-		const iDeg = this.startDeg + this.input.value * (this.endDeg + 360 - this.startDeg) / 100;
+		const iDeg = this.startDeg + this.input.value * (this.endDeg + 360 - this.startDeg) / this.maxVal;
 		this.reDraw(iDeg);
 	},
 
@@ -220,20 +222,24 @@ Finfosoft.Ring.prototype = {
 	keyup(ev) {
 		this.regularVal();
 		if (ev.keyCode === 13) {
+			const unRegVal = _.makePrecision(this.input.value, this.precision);
+			this.input.value = unRegVal;
 			this.input.blur();
 		}
 	},
 
 	//禁用除数字外的其他输入
 	regularVal() {
-		this.input.value = this.input.value.replace(/\D/g, '');
-		if (this.input.value.length > 2) {
-			this.input.value = 100;
+		this.input.value = this.input.value.replace(/[^0-9^.]/g, '');
+		const unRegVal = _.makePrecision(this.input.value, this.precision);
+		const regVal = _.makePrecision(this.maxVal, this.precision);
+		if (parseFloat(unRegVal) > parseFloat(regVal)) {
+			this.input.value = parseFloat(regVal);
 		}
 	},
 
 	reset() {
-		const iDeg = this.startDeg + this.initVal * (this.endDeg + 360 - this.startDeg) / 100;
+		const iDeg = this.startDeg + this.initVal * (this.endDeg + 360 - this.startDeg) / this.maxVal;
 		const iScale = (iDeg - this.startDeg) / (this.endDeg + 360 - this.startDeg);
 		this.rangeText(iScale);
 		this.reDraw(iDeg);
@@ -998,6 +1004,13 @@ const _ = {
 			canvas.style.width = size + 'px';
 			canvas.style.height = size + 'px';
 		}
+	},
+
+	makePrecision(val, precision) {
+		if (!val) {
+			val = 0;
+		}
+		return parseFloat(val).toFixed( parseInt(precision) );
 	}
 
 }
