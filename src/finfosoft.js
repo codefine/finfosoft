@@ -585,7 +585,7 @@ Finfosoft.Clock.prototype = {
 		const t = 0.04;
 		let tr = 0;
 		beginDeg = Math.round(beginDeg / s) * s; //规范起始点角度
-		let n = endDeg >= beginDeg ? Math.round( (endDeg - beginDeg) / 5 ) : Math.round( (endDeg - beginDeg + 360) / 5 ); //点数
+		let n = endDeg > beginDeg ? Math.round( (endDeg - beginDeg) / 5 ) : Math.round( (endDeg - beginDeg + 360) / 5 ); //点数
 		n = n >= 360 / 5 ? 360 / 5 : n; //数据超出范围处理
 		for (let i = 0; i <= n; i ++) {
 			const deg = (beginDeg + s * i - 90) * Math.PI / 180;
