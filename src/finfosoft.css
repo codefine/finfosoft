@@ -19,18 +19,18 @@ li{
 	cursor: pointer;
 	outline: none;
 }
-.clearfix:after{
+.finfosoft .clearfix:after{
 	content: "";
 	display: block;
 	clear: both;
 }
-.fl{
+.finfosoft .fl{
 	float: left;
 }
-.fr{
+.finfosoft .fr{
 	float: right;
 }
-.ib{
+.finfosoft .ib{
 	display: inline-block;
 }
 
@@ -171,6 +171,9 @@ li{
 .finfosoft-clock>.panel>dd select{
 	transition: 0.4s;
 }
+.finfosoft-clock>.panel>dd span{
+	transition: 0.4s;
+}
 .finfosoft-clock>.panel>dd:hover{
 	background: #000;
 	box-shadow: 0 4px 6px rgba(0, 0, 0, 0.38);
@@ -183,6 +186,9 @@ li{
 }
 .finfosoft-clock>.panel>dd:hover option{
 	color: #000;
+}
+.finfosoft-clock>.panel>dd:hover span{
+	color: #fff;
 }
 .finfosoft-clock>.panel>.start{
 	left: 10%;

@@ -440,10 +440,13 @@ Finfosoft.Clock.prototype = {
 		panel.appendChild(start);
 		const boxS = document.createElement('div');
 		boxS.classList.add('box');
-		const hourS = _.createSelect(24, this.opts.initVal[0][0]);
+		const hourS = _.createSelect(24, this.opts.initVal[0][0], true);
 		hourS.classList.add('hour', 'ib');
 		boxS.appendChild(hourS);
-		const minuteS = _.createSelect(60, this.opts.initVal[0][1]);
+		const dividerS = document.createElement("span");
+		dividerS.innerHTML = ":";
+		boxS.appendChild(dividerS);
+		const minuteS = _.createSelect(60, this.opts.initVal[0][1], true);
 		minuteS.classList.add('minute', 'ib');
 		boxS.appendChild(minuteS);
 		start.appendChild(boxS);
@@ -456,10 +459,13 @@ Finfosoft.Clock.prototype = {
 		panel.appendChild(end);
 		const boxE = document.createElement('div');
 		boxE.classList.add('box');
-		const hourE = _.createSelect(24, this.opts.initVal[1][0]);
+		const hourE = _.createSelect(24, this.opts.initVal[1][0], true);
 		hourE.classList.add('hour', 'ib');
 		boxE.appendChild(hourE);
-		const minuteE = _.createSelect(60, this.opts.initVal[1][1]);
+		const dividerE = document.createElement("span");
+		dividerE.innerHTML = ":";
+		boxE.appendChild(dividerE);
+		const minuteE = _.createSelect(60, this.opts.initVal[1][1], true);
 		minuteE.classList.add('minute', 'ib');
 		boxE.appendChild(minuteE);
 		end.appendChild(boxE);
@@ -623,7 +629,7 @@ Finfosoft.Clock.prototype = {
 
 	//时间数组格式化为字符串
 	timeArrayToString(array) {
-		return `${array[0][0]}:${array[0][1]} ~ ${array[1][0]}:${array[1][1]}`;
+		return `${ _.timeFixer(array[0][0]) }:${ _.timeFixer(array[0][1]) } ~ ${ _.timeFixer(array[1][0]) }:${ _.timeFixer(array[1][1]) }`;
 	},
 
 	//时间数组转化为角度范围
@@ -986,11 +992,11 @@ const _ = {
 	},
 
 	//生成下拉菜单
-	createSelect(n, index) {
+	createSelect(n, index, format) {
 		const select = document.createElement('select');
 		for (let i = 0; i < n; i ++) {
 			let option = document.createElement('option');
-			option.innerHTML = i;
+			option.innerHTML = format ? _.timeFixer(i) : i;
 			option.value = i;
 			select.appendChild(option);
 		}
@@ -1011,6 +1017,10 @@ const _ = {
 			val = 0;
 		}
 		return parseFloat(val).toFixed( parseInt(precision) );
+	},
+
+	timeFixer(n) {
+		return n < 10 ? `0${n}` : n; 
 	}
 
 }
