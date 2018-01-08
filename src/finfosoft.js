@@ -587,7 +587,7 @@ Finfosoft.Clock.prototype = {
 		beginDeg = Math.round(beginDeg / s) * s; //规范起始点角度
 		let n = endDeg > beginDeg ? Math.round( (endDeg - beginDeg) / 5 ) : Math.round( (endDeg - beginDeg + 360) / 5 ); //点数
 		if (n > 360 / 5) {
-			throw new RangeError(`Finfosoft.Clock {opts.initVal} is out of 24 hours range.`)
+			throw new RangeError(`Finfosoft.Clock {opts.initVal ${this.opts.initVal}} is out of 24 hours range.`)
 		}
 		// n = n >= 360 / 5 ? 360 / 5 : n; //数据超出范围处理
 		for (let i = 0; i <= n; i ++) {
